@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Gateway de Pagamento - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Gateway de Pagamento</h1>
+
+<!-- Status atual -->
+{% if gateway_atual %}
+<div class="alert alert-success">
+    <strong>Gateway Atual:</strong> 
+    {% if gateway_atual.type == 'MP' %}
+        Mercado Pago (Configurado)
+    {% elif gateway_atual.type == 'pp' %}
+        PushinPay (Token: {{ gateway_atual.token[:10] }}...)
+    {% else %}
+        Nenhum gateway configurado
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Opções de Gateway -->
+<div class="form-container">
+    <h2>🟦 Mercado Pago</h2>
+    <p>Clique no botão abaixo para autorizar o Mercado Pago:</p>
+    <a href="{{ mp_auth_url }}" class="btn btn-primary" target="_blank">Autorizar Mercado Pago</a>
+    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+        Após autorizar, você será redirecionado de volta automaticamente.
+    </p>
+</div>
+
+<div class="form-container" style="margin-top: 20px;">
+    <h2>🟩 PushinPay</h2>
+    <form method="POST">
+        <input type="hidden" name="gateway_type" value="pushinpay">
+        <div class="form-group">
+            <label>Token PushinPay</label>
+            <input type="text" name="token" placeholder="Cole aqui seu token PushinPay" required>
+        </div>
+        <button type="submit" class="btn btn-success">Salvar Token</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Downsell - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Downsell</h1>
+
+{% if not upsell_configurado %}
+<div class="alert alert-error">
+    ⚠️ Configure o Upsell primeiro! O downsell usa o mesmo grupo VIP do upsell.
+</div>
+{% else %}
+    {% if downsell_atual and downsell_atual.value %}
+    <div class="alert alert-success">
+        <strong>Downsell Ativo:</strong> R$ {{ downsell_atual.value }}
+    </div>
+    {% endif %}
+    
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Mensagem do Downsell</label>
+                <textarea name="texto" rows="4" required placeholder="Ex: 💸 ÚLTIMA CHANCE! Que tal por apenas R$ X? Oferta válida apenas agora!">{{ downsell_atual.text if downsell_atual else '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Mídia (Opcional)</label>
+                <input type="file" name="midia" accept="image/*,video/*">
+                {% if downsell_atual and downsell_atual.media %}
+                    <p style="color: green; margin-top: 5px;">✅ Mídia já configurada</p>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label>Valor do Downsell (R$)</label>
+                <input type="number" name="valor" step="0.01" min="0.01" required 
+                       value="{{ downsell_atual.value if downsell_atual else '' }}"
+                       placeholder="Ex: 27.00">
+                <small style="display: block; margin-top: 5px; color: #666;">
+                    Valor do Upsell: R$ {{ upsell_value }} (o downsell deve ser menor)
+                </small>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Salvar Downsell</button>
+            {% if downsell_atual and downsell_atual.value %}
+            <button type="submit" name="remover" value="true" class="btn btn-danger">Remover Downsell</button>
+            {% endif %}
+        </form>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+        <h3>💡 Como funciona:</h3>
+        <p>O downsell será oferecido apenas se o cliente recusar o upsell. É uma última chance com desconto.</p>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Novo Bot - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Criar Novo Bot</h1>
+
+<div class="form-container">
+    <form method="POST" id="criarBotForm">
+        <div class="form-group">
+            <label>Token do Bot</label>
+            <input type="text" name="token" required placeholder="Ex: 1234567890:ABCdefGHIjklMNOpqrsTUVwxyz">
+            <small style="display: block; margin-top: 5px; color: #666;">
+                Para obter o token: <br>
+                1. Abra o @BotFather no Telegram<br>
+                2. Envie /newbot<br>
+                3. Escolha um nome e username<br>
+                4. Copie o token fornecido
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Criar Bot</button>
+    </form>
+</div>
+
+<!-- Status de verificação -->
+<div id="statusVerificacao" style="display: none; margin-top: 20px;">
+    <div class="form-container">
+        <h3>Verificando bot...</h3>
+        <p id="statusMessage">Aguarde enquanto verificamos o token...</p>
+    </div>
+</div>
+
+<div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px;">
+    <h3>📌 Importante:</h3>
+    <ul>
+        <li>Use apenas tokens de bots que você criou</li>
+        <li>Cada bot pode ser gerenciado por apenas uma pessoa</li>
+        <li>O bot será iniciado automaticamente após a criação</li>
+    </ul>
+</div>
+
+<script>
+document.getElementById('criarBotForm').onsubmit = function(e) {
+    document.getElementById('statusVerificacao').style.display = 'block';
+    document.getElementById('statusMessage').textContent = 'Verificando token...';
+}
+</script>
+{% endblock %}

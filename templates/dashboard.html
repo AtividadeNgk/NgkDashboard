@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<!-- Cards de estatísticas -->
+<div class="stats-container">
+    <div class="stat-card">
+        <h2 id="botsActive">{{ dashboard_data.botsActive }}</h2>
+        <p>Bots Ativos</p>
+    </div>
+    <div class="stat-card">
+        <h2 id="usersCount">{{ dashboard_data.usersCount }}</h2>
+        <p>Usuários Total</p>
+    </div>
+    <div class="stat-card">
+        <h2 id="salesCount">{{ dashboard_data.salesCount }}</h2>
+        <p>Vendas Totais</p>
+    </div>
+</div>
+
+<!-- Lista rápida dos bots -->
+<h2>Bots Recentes</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Bot</th>
+            <th>Status</th>
+            <th>Usuários</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bot in recent_bots %}
+        <tr>
+            <td>{{ bot.name }}</td>
+            <td>
+                {% if bot.active %}
+                    <span style="color: green;">✅ Ativo</span>
+                {% else %}
+                    <span style="color: red;">❌ Inativo</span>
+                {% endif %}
+            </td>
+            <td>{{ bot.users_count }}</td>
+            <td>
+                <button class="btn btn-primary" onclick="selectBot('{{ bot.id }}')">Gerenciar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+// Atualiza estatísticas a cada 5 segundos
+setInterval(function() {
+    fetch('/dashboard-data')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('botsActive').innerText = data.botsActive;
+            document.getElementById('usersCount').innerText = data.usersCount;
+            document.getElementById('salesCount').innerText = data.salesCount;
+        });
+}, 5000);
+</script>
+{% endblock %}

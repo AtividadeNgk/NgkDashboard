@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Mensagem Inicial - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Mensagens de Boas-Vindas</h1>
+
+<div class="form-container">
+    <form method="POST" enctype="multipart/form-data">
+        <!-- Mídia Inicial -->
+        <div class="form-group">
+            <label>Mídia Inicial (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+            {% if config_atual.midia %}
+                <p style="color: green; margin-top: 5px;">✅ Mídia já configurada</p>
+            {% endif %}
+        </div>
+        
+        <!-- Texto 1 -->
+        <div class="form-group">
+            <label>Primeira Mensagem (Opcional)</label>
+            <textarea name="texto1" rows="4" placeholder="Digite a primeira mensagem...">{{ config_atual.texto1 or '' }}</textarea>
+        </div>
+        
+        <!-- Texto 2 -->
+        <div class="form-group">
+            <label>Segunda Mensagem (Obrigatória)</label>
+            <textarea name="texto2" rows="4" required placeholder="Digite a segunda mensagem...">{{ config_atual.texto2 or '' }}</textarea>
+        </div>
+        
+        <!-- Botão -->
+        <div class="form-group">
+            <label>Texto do Botão</label>
+            <input type="text" name="botao" value="{{ config_atual.button or 'VER OFERTAS' }}" required>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Salvar Configurações</button>
+        
+        <!-- Botões para remover -->
+        {% if config_atual.midia %}
+        <button type="submit" name="remover_midia" value="true" class="btn btn-danger">Remover Mídia</button>
+        {% endif %}
+        {% if config_atual.texto1 %}
+        <button type="submit" name="remover_texto1" value="true" class="btn btn-danger">Remover Texto 1</button>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Preview -->
+<div style="margin-top: 30px;">
+    <h2>Preview:</h2>
+    <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; max-width: 400px;">
+        {% if config_atual.midia %}
+            <p style="text-align: center; color: #666;">[Mídia será exibida aqui]</p>
+        {% endif %}
+        {% if config_atual.texto1 %}
+            <p style="margin: 10px 0;">{{ config_atual.texto1 }}</p>
+        {% endif %}
+        <p style="margin: 10px 0;">{{ config_atual.texto2 }}</p>
+        <button style="width: 100%; padding: 10px; background: #0088cc; color: white; border: none; border-radius: 5px;">
+            {{ config_atual.button }}
+        </button>
+    </div>
+</div>
+{% endblock %}

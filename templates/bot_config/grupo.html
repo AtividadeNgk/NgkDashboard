@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Grupo VIP - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Grupo VIP</h1>
+
+<!-- Status atual -->
+{% if grupo_atual %}
+<div class="alert alert-success">
+    <strong>Grupo Atual:</strong> {{ grupo_atual }}
+    {% if grupo_link %}
+        <br><strong>Link:</strong> <a href="{{ grupo_link }}" target="_blank">{{ grupo_link }}</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label>ID do Grupo</label>
+            <input type="text" name="grupo_id" 
+                   placeholder="Ex: -1001234567890" 
+                   value="{{ grupo_atual or '' }}"
+                   required>
+            <small style="display: block; margin-top: 5px; color: #666;">
+                Como pegar o ID: Adicione o bot @RawDataBot no grupo e ele mostrará o ID
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar e Testar</button>
+    </form>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px;">
+        <h3>⚠️ Importante:</h3>
+        <ul>
+            <li>O bot precisa ser administrador do grupo</li>
+            <li>O bot precisa ter permissão para convidar membros</li>
+            <li>Use grupos privados para melhor controle</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

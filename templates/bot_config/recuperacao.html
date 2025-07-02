@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Recuperação de Carrinho - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Recuperação de Carrinho</h1>
+
+<!-- Lista de planos com recuperação -->
+{% if planos_com_recuperacao %}
+<div class="form-container">
+    <h2>Planos com Recuperação Ativa</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Plano</th>
+                <th>Valor Recuperação</th>
+                <th>Tempo (min)</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plano in planos_com_recuperacao %}
+            <tr>
+                <td>{{ plano.name }}</td>
+                <td>R$ {{ plano.recovery.value }}</td>
+                <td>{{ plano.recovery.tempo }} min</td>
+                <td>
+                    <button class="btn btn-danger" onclick="removeRecuperacao('{{ loop.index0 }}')">Remover</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- Adicionar recuperação -->
+{% if planos_sem_recuperacao %}
+<div class="form-container" style="margin-top: 20px;">
+    <h2>Adicionar Recuperação a um Plano</h2>
+    <form method="POST" enctype="multipart/form-data" id="recuperacaoForm">
+        <div class="form-group">
+            <label>Selecione o Plano</label>
+            <select name="plano_index" required>
+                <option value="">Escolha um plano...</option>
+                {% for plano in planos_sem_recuperacao %}
+                <option value="{{ loop.index0 }}">{{ plano.name }} - R$ {{ plano.value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Mensagem de Recuperação</label>
+            <textarea name="texto" rows="4" required placeholder="Ex: 🔥 ÚLTIMA CHANCE! Você ainda pode garantir seu acesso com um SUPER DESCONTO!"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Mídia (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+        </div>
+        
+        <div class="form-group">
+            <label>Valor da Recuperação (R$)</label>
+            <input type="number" name="valor" step="0.01" min="4" required placeholder="Ex: 19.90">
+        </div>
+        
+        <div class="form-group">
+            <label>Tempo para Disparar (minutos)</label>
+            <input type="number" name="tempo" min="1" required placeholder="Ex: 30">
+            <small style="display: block; margin-top: 5px; color: #666;">
+                Após quantos minutos enviar a mensagem de recuperação
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Adicionar Recuperação</button>
+    </form>
+</div>
+{% else %}
+<div class="alert alert-success">
+    Todos os planos já possuem recuperação configurada!
+</div>
+{% endif %}
+
+<script>
+function removeRecuperacao(planoIndex) {
+    if(confirm('Tem certeza que deseja remover esta recuperação?')) {
+        fetch(window.location.pathname + '/remove/' + planoIndex, {
+            method: 'POST'
+        })
+        .then(() => window.location.reload());
+    }
+}
+</script>
+{% endblock %}

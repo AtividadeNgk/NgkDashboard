@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Administradores - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Gerenciar Administradores</h1>
+
+<!-- Lista de admins -->
+<div class="form-container">
+    <h2>Administradores Atuais</h2>
+    {% if admins %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in admins %}
+                <tr>
+                    <td>{{ admin.id }}</td>
+                    <td>@{{ admin.username or 'Sem username' }}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="removeAdmin('{{ admin.id }}')">Remover</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum administrador adicional cadastrado.</p>
+    {% endif %}
+</div>
+
+<!-- Adicionar admin -->
+<div class="form-container" style="margin-top: 20px;">
+    <h2>Adicionar Novo Admin</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>ID do Usuário</label>
+            <input type="text" name="admin_id" required placeholder="Ex: 123456789">
+            <small style="display: block; margin-top: 5px; color: #666;">
+                O usuário pode obter seu ID enviando /start para @userinfobot
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Adicionar Admin</button>
+    </form>
+    
+    <div style="margin-top: 20px; padding: 15px; background: #f8d7da; border-radius: 5px;">
+        <h3>⚠️ Atenção:</h3>
+        <p>Adicione apenas pessoas de confiança! Admins têm acesso total ao bot.</p>
+    </div>
+</div>
+
+<script>
+function removeAdmin(adminId) {
+    if(confirm('Tem certeza que deseja remover este admin?')) {
+        fetch(window.location.pathname + '/remove/' + adminId, {
+            method: 'POST'
+        })
+        .then(() => window.location.reload());
+    }
+}
+</script>
+{% endblock %}

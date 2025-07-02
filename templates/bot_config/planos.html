@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Planos - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Gerenciar Planos</h1>
+
+<!-- Lista de planos existentes -->
+<div class="plans-grid">
+    {% for plano in planos %}
+    <div class="plan-card">
+        <h3>{{ plano.name }}</h3>
+        <p><strong>Valor:</strong> R$ {{ plano.value }}</p>
+        <p><strong>Duração:</strong> 
+            {% if plano.time_type == 'eterno' %}
+                Vitalício
+            {% else %}
+                {{ plano.time }} {{ plano.time_type }}(s)
+            {% endif %}
+        </p>
+        <button class="btn btn-danger" onclick="deletePlano('{{ loop.index0 }}')">Deletar</button>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Formulário para adicionar novo plano -->
+<div class="form-container">
+    <h2>Adicionar Novo Plano</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Nome do Plano</label>
+            <input type="text" name="nome" required placeholder="Ex: Plano Mensal">
+        </div>
+        
+        <div class="form-group">
+            <label>Tipo de Duração</label>
+            <select name="tipo_tempo" id="tipo_tempo" onchange="toggleDuration()">
+                <option value="dia">Dias</option>
+                <option value="semana">Semanas</option>
+                <option value="mes">Meses</option>
+                <option value="ano">Anos</option>
+                <option value="eterno">Vitalício</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="tempo_group">
+            <label>Quantidade</label>
+            <input type="number" name="tempo" min="1" placeholder="Ex: 30">
+        </div>
+        
+        <div class="form-group">
+            <label>Valor (R$)</label>
+            <input type="number" name="valor" step="0.01" min="4" required placeholder="Ex: 49.90">
+        </div>
+        
+        <button type="submit" class="btn btn-success">Adicionar Plano</button>
+    </form>
+</div>
+
+<script>
+function toggleDuration() {
+    const tipoTempo = document.getElementById('tipo_tempo').value;
+    const tempoGroup = document.getElementById('tempo_group');
+    
+    if(tipoTempo === 'eterno') {
+        tempoGroup.style.display = 'none';
+    } else {
+        tempoGroup.style.display = 'block';
+    }
+}
+
+function deletePlano(index) {
+    if(confirm('Tem certeza que deseja deletar este plano?')) {
+        fetch(window.location.pathname + '/delete/' + index, {
+            method: 'POST'
+        })
+        .then(() => window.location.reload());
+    }
+}
+</script>
+{% endblock %}

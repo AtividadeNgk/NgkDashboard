@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Mensagem de Expiração - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Mensagem de Expiração</h1>
+
+{% if expiracao_atual and expiracao_atual.text %}
+<div class="alert alert-success">
+    ✅ Mensagem de expiração configurada
+</div>
+{% endif %}
+
+<div class="form-container">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Mensagem de Expiração</label>
+            <textarea name="texto" rows="5" required placeholder="Ex: ⏰ Seu acesso ao grupo expirou! Clique no botão abaixo para renovar e continuar aproveitando nosso conteúdo exclusivo.">{{ expiracao_atual.text if expiracao_atual else '' }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Mídia (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+            {% if expiracao_atual and expiracao_atual.media %}
+                <p style="color: green; margin-top: 5px;">✅ Mídia já configurada</p>
+            {% endif %}
+        </div>
+        
+        <button type="submit" class="btn btn-success">Salvar Mensagem</button>
+        {% if expiracao_atual and expiracao_atual.text %}
+        <button type="submit" name="remover" value="true" class="btn btn-danger">Remover Configuração</button>
+        {% endif %}
+    </form>
+</div>
+
+<div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 5px;">
+    <h3>📌 Informações:</h3>
+    <ul>
+        <li>Esta mensagem será enviada quando o acesso do usuário expirar</li>
+        <li>Um botão "RENOVAR ASSINATURA" será adicionado automaticamente</li>
+        <li>O usuário será removido do grupo após receber esta mensagem</li>
+    </ul>
+</div>
+{% endblock %}

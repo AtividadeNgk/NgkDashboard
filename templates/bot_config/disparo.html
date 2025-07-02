@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Disparo em Massa - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Disparo em Massa</h1>
+
+<div class="form-container">
+    <form method="POST" enctype="multipart/form-data" onsubmit="return confirmarDisparo()">
+        <!-- Tipo de Disparo -->
+        <div class="form-group">
+            <label>Tipo de Disparo</label>
+            <select name="tipo_disparo" id="tipoDisparo" onchange="toggleDisparoFields()" required>
+                <option value="">Selecione...</option>
+                <option value="livre">Link Livre</option>
+                <option value="plano">Oferta de Plano</option>
+            </select>
+        </div>
+        
+        <!-- Campo para Link (só aparece se tipo = livre) -->
+        <div class="form-group" id="linkGroup" style="display: none;">
+            <label>Link para Enviar</label>
+            <input type="url" name="link" placeholder="https://exemplo.com">
+        </div>
+        
+        <!-- Campo para Plano (só aparece se tipo = plano) -->
+        <div class="form-group" id="planoGroup" style="display: none;">
+            <label>Selecione o Plano</label>
+            <select name="plano_index">
+                <option value="">Escolha um plano...</option>
+                {% for plano in planos %}
+                <option value="{{ loop.index0 }}">{{ plano.name }} - R$ {{ plano.value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Mensagem -->
+        <div class="form-group">
+            <label>Mensagem do Disparo</label>
+            <textarea name="texto" rows="5" required placeholder="Digite a mensagem que será enviada para todos os usuários..."></textarea>
+        </div>
+        
+        <!-- Mídia -->
+        <div class="form-group">
+            <label>Mídia (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+        </div>
+        
+        <!-- Informações -->
+        <div class="alert alert-success">
+            <strong>Total de usuários:</strong> {{ total_usuarios }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">🚀 Iniciar Disparo</button>
+    </form>
+</div>
+
+<!-- Resultado do disparo (aparece após envio) -->
+{% if disparo_resultado %}
+<div class="form-container" style="margin-top: 20px;">
+    <h2>Resultado do Disparo</h2>
+    <div class="alert alert-success">
+        <p><strong>✅ Enviados:</strong> {{ disparo_resultado.enviados }}/{{ disparo_resultado.total }}</p>
+        <p><strong>⛔ Erros:</strong> {{ disparo_resultado.erros }}</p>
+        <p><strong>🚫 Bloqueados:</strong> {{ disparo_resultado.bloqueados }}</p>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function toggleDisparoFields() {
+    const tipo = document.getElementById('tipoDisparo').value;
+    document.getElementById('linkGroup').style.display = tipo === 'livre' ? 'block' : 'none';
+    document.getElementById('planoGroup').style.display = tipo === 'plano' ? 'block' : 'none';
+}
+
+function confirmarDisparo() {
+    return confirm('Tem certeza que deseja enviar esta mensagem para TODOS os {{ total_usuarios }} usuários?');
+}
+</script>
+{% endblock %}

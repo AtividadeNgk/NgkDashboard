@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Upsell - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Configurar Upsell</h1>
+
+{% if upsell_atual and upsell_atual.value %}
+<div class="alert alert-success">
+    <strong>Upsell Ativo:</strong> R$ {{ upsell_atual.value }} - Grupo: {{ upsell_atual.group_id }}
+</div>
+{% endif %}
+
+<div class="form-container">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Mensagem do Upsell</label>
+            <textarea name="texto" rows="4" required placeholder="Ex: 🎯 OFERTA ESPECIAL! Por apenas R$ X tenha acesso ao grupo VIP...">{{ upsell_atual.text if upsell_atual else '' }}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Mídia (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+            {% if upsell_atual and upsell_atual.media %}
+                <p style="color: green; margin-top: 5px;">✅ Mídia já configurada</p>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label>Valor do Upsell (R$)</label>
+            <input type="number" name="valor" step="0.01" min="0.01" required 
+                   value="{{ upsell_atual.value if upsell_atual else '' }}"
+                   placeholder="Ex: 47.00">
+        </div>
+        
+        <div class="form-group">
+            <label>ID do Grupo VIP Extra</label>
+            <input type="text" name="grupo_id" required 
+                   value="{{ upsell_atual.group_id if upsell_atual else '' }}"
+                   placeholder="Ex: -1001234567890">
+            <small style="display: block; margin-top: 5px; color: #666;">
+                Este é o grupo adicional que o cliente terá acesso ao pagar o upsell
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Salvar Upsell</button>
+        {% if upsell_atual and upsell_atual.value %}
+        <button type="submit" name="remover" value="true" class="btn btn-danger">Remover Upsell</button>
+        {% endif %}
+    </form>
+</div>
+
+<div style="margin-top: 20px; padding: 15px; background: #e8f4ff; border-radius: 5px;">
+    <h3>💡 Como funciona:</h3>
+    <p>O upsell será oferecido automaticamente após o cliente pagar o plano principal e entrar no grupo.</p>
+</div>
+{% endblock %}

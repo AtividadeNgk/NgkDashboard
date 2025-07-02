@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Order Bump - Bot Manager{% endblock %}
+
+{% block content %}
+<h1>Gerenciar Order Bumps</h1>
+
+<!-- Lista de order bumps -->
+{% if orderbumps %}
+<div class="form-container">
+    <h2>Order Bumps Ativos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Plano</th>
+                <th>Valor Extra</th>
+                <th>Valor Total</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ob in orderbumps %}
+            <tr>
+                <td>{{ ob.plano_nome }}</td>
+                <td>+ R$ {{ ob.value }}</td>
+                <td>R$ {{ ob.valor_total }}</td>
+                <td>
+                    <button class="btn btn-danger" onclick="removeOrderBump({{ ob.plano_id }})">Remover</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- Adicionar order bump -->
+{% if planos_disponiveis %}
+<div class="form-container" style="margin-top: 20px;">
+    <h2>Adicionar Order Bump</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Selecione o Plano</label>
+            <select name="plano_index" required onchange="updateValorTotal()">
+                <option value="">Escolha um plano...</option>
+                {% for plano in planos_disponiveis %}
+                <option value="{{ loop.index0 }}" data-valor="{{ plano.value }}">
+                    {{ plano.name }} - R$ {{ plano.value }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Mensagem do Order Bump</label>
+            <textarea name="texto" rows="4" required placeholder="Ex: 🎁 OFERTA ESPECIAL! Por apenas R$ X a mais, ganhe acesso a [benefício extra]!"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Mídia (Opcional)</label>
+            <input type="file" name="midia" accept="image/*,video/*">
+        </div>
+        
+        <div class="form-group">
+            <label>Valor Adicional (R$)</label>
+            <input type="number" name="valor" id="valorAdicional" step="0.01" min="0.01" required 
+                   placeholder="Ex: 15.00" onkeyup="updateValorTotal()">
+        </div>
+        
+        <div class="alert alert-success" id="valorTotalDiv" style="display: none;">
+            <strong>Valor Total:</strong> R$ <span id="valorTotal">0.00</span>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Adicionar Order Bump</button>
+    </form>
+</div>
+{% else %}
+<div class="alert alert-error">
+    Nenhum plano disponível para Order Bump. Crie planos primeiro!
+</div>
+{% endif %}
+
+<div style="margin-top: 20px; padding: 15px; background: #e8f4ff; border-radius: 5px;">
+    <h3>💡 Como funciona:</h3>
+    <p>O Order Bump aparece ANTES do pagamento, oferecendo um benefício extra por um valor adicional.</p>
+</div>
+
+<script>
+function updateValorTotal() {
+    const select = document.querySelector('select[name="plano_index"]');
+    const valorAdicional = document.getElementById('valorAdicional').value;
+    
+    if(select.value && valorAdicional) {
+        const valorPlano = parseFloat(select.options[select.selectedIndex].getAttribute('data-valor'));
+        const valorExtra = parseFloat(valorAdicional);
+        const total = valorPlano + valorExtra;
+        
+        document.getElementById('valorTotal').textContent = total.toFixed(2);
+        document.getElementById('valorTotalDiv').style.display = 'block';
+    } else {
+        document.getElementById('valorTotalDiv').style.display = 'none';
+    }
+}
+
+function removeOrderBump(planoId) {
+    if(confirm('Tem certeza que deseja remover este Order Bump?')) {
+        fetch(window.location.pathname + '/remove/' + planoId, {
+            method: 'POST'
+        })
+        .then(() => window.location.reload());
+    }
+}
+</script>
+{% endblock %}
